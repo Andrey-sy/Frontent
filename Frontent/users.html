@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badzoom - Пользователи</title>
+    <link rel="preload" href="img/planet.jpg" as="image">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .users-section {
+            min-height: 100vh;
+            padding: 100px 0;
+            background-color: #0a0a0a;
+            color: #f0f0f0;
+            position: relative;
+        }
+
+        .users-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, transparent, #4dabf7, transparent);
+        }
+
+        .users-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .users-header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: white;
+            position: relative;
+            display: inline-block;
+        }
+
+        .users-header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right, transparent, #4dabf7, transparent);
+        }
+
+        .users-count {
+            font-size: 1.2rem;
+            color: #b0b0b0;
+        }
+
+        .users-list {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .user-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .user-card:hover {
+            transform: translateY(-5px);
+            border-color: #4dabf7;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4dabf7, #3a8bd6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .user-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #b0b0b0;
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+        }
+
+        .user-detail i {
+            color: #4dabf7;
+            width: 16px;
+        }
+
+        .empty-state {
+            max-width: 500px;
+            margin: 50px auto;
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #4dabf7;
+        }
+
+        .empty-state h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .empty-state p {
+            color: #b0b0b0;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .action-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #4dabf7;
+            color: black;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: #3a8bd6;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(77, 171, 247, 0.4);
+        }
+
+        .filters {
+            max-width: 1000px;
+            margin: 0 auto 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-input {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            min-width: 250px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: #4dabf7;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .filter-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-icon {
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #b0b0b0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-icon:hover {
+            background: rgba(77, 171, 247, 0.1);
+            color: #4dabf7;
+            border-color: #4dabf7;
+        }
+
+        @media (max-width: 768px) {
+            .users-section {
+                padding: 80px 20px;
+            }
+
+            .users-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .users-list {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .filter-input {
+                min-width: 100%;
+            }
+
+            .user-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .users-header h1 {
+                font-size: 2rem;
+            }
+
+            .empty-state {
+                padding: 30px 20px;
+            }
+
+            .empty-icon {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="parallax-section" id="home">
+        <div class="parallax-bg">
+            <div class="image-loading">Загрузка изображения...</div>
+        </div>
+
+        <header class="transparent-header">
+            <div class="container">
+                <div class="nav-left">
+                    <a href="index.html" class="logo">
+                        <i class="fas fa-camera"></i>
+                        <span>Badzoom</span>
+                    </a>
+                </div>
+
+                <div class="nav-right">
+                    <div class="auth-buttons">
+                        <a href="login.html" class="nav-btn login-btn">Войти</a>
+                        <a href="register.html" class="nav-btn register-btn">Зарегистрироваться</a>
+                        <a href="users.html" class="nav-btn users-btn">Пользователи</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="hero-content">
+            <h1 class="hero-title">Пользователи Badzoom</h1>
+        </div>
+    </section>
+
+    <section class="users-section" id="users">
+        <div class="container">
+            <div class="users-header">
+                <h1>Зарегистрированные пользователи</h1>
+                <p class="users-count">Всего пользователей: 12</p>
+            </div>
+
+            <div class="filters">
+                <input type="text" class="filter-input" placeholder="Поиск по имени или email..." id="searchInput">
+            </div>
+
+            <div class="users-list" id="usersList">
+                <div class="user-card">
+                    <div class="user-avatar">ИИ</div>
+                    <div class="user-info">
+                        <h3>Иванов Иван Иванович</h3>
+                        <div class="user-detail">
+                            <i class="fas fa-envelope"></i>
+                            <span>ivanov@example.com</span>
+                        </div>
+                        <div class="user-detail">
+                            <i class="fas fa-briefcase"></i>
+                            <span>Студент факультета информатики</span>
+                        </div>
+                        <div class="user-detail">
+                            <i class="fas fa-id-card"></i>
+                            <span>ID: 001</span>
+                        </div>
+                        <div class="user-actions">
+                            <button class="action-icon" title="Отправить сообщение">
+                                <i class="fas fa-comment"></i>
+                            </button>
+                            <button class="action-icon" title="Позвонить">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user-card">
+                    <div class="user-avatar">ПП</div>
+                    <div class="user-info">
+                        <h3>Петрова Анна Сергеевна</h3>
+                        <div class="user-detail">
+                            <i class="fas fa-envelope"></i>
+                            <span>petrova@example.com</span>
+                        </div>
+                        <div class="user-detail">
+                            <i class="fas fa-briefcase"></i>
+                            <span>Преподаватель математики</span>
+                        </div>
+                        <div class="user-detail">
+                            <i class="fas fa-id-card"></i>
+                            <span>ID: 002</span>
+                        </div>
+                        <div class="user-actions">
+                            <button class="action-icon" title="Отправить сообщение">
+                                <i class="fas fa-comment"></i>
+                            </button>
+                            <button class="action-icon" title="Позвонить">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user-card">
+                    <div class="user-avatar">СС</div>
+                    <div class="user-info">
+                        <h3>Сидоров Алексей Викторович</h3>
+                        <div class="user-detail">
+                            <i class="fas fa-envelope"></i>
+                            <span>sidorov@example.com</span>
+                        </div>
+                        <div class="user-detail">
+                            <i class="fas fa-briefcase"></i>
+                            <span>Студент инженерного факультета</span>
+                        </div>
+                        <div class="user-detail">
+                            <i class="fas fa-id-card"></i>
+                            <span>ID: 003</span>
+                        </div>
+                        <div class="user-actions">
+                            <button class="action-icon" title="Отправить сообщение">
+                                <i class="fas fa-comment"></i>
+                            </button>
+                            <button class="action-icon" title="Позвонить">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user-card">
+                    <div class="user-avatar">КМ</div>
+                    <div class="user-info">
+                        <h3>Козлова Мария Дмитриевна</h3>
+                        <div class="user-detail">
+                            <i class="fas fa-envelope"></i>
+                            <span>kozlova@example.com</span>
+                        </div>
+                        <div class="user-detail">
+                            <i class="fas fa-briefcase"></i>
+                            <span>Аспирант кафедры физики</span>
+                        </div>
+                        <div class="user-detail">
+                            <i class="fas fa-id-card"></i>
+                            <span>ID: 004</span>
+                        </div>
+                        <div class="user-actions">
+                            <button class="action-icon" title="Отправить сообщение">
+                                <i class="fas fa-comment"></i>
+                            </button>
+                            <button class="action-icon" title="Позвонить">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user-card">
+                    <div class="user-avatar">НВ</div>
+                    <div class="user-info">
+                        <h3>Новиков Владислав Олегович</h3>
+                        <div class="user-detail">
+                            <i class="fas fa-envelope"></i>
+                            <span>novikov@example.com</span>
+                        </div>
+                        <div class="user-detail">
+                            <i class="fas fa-briefcase"></i>
+                            <span>Лаборант компьютерного центра</span>
+                        </div>
+                        <div class="user-detail">
+                            <i class="fas fa-id-card"></i>
+                            <span>ID: 005</span>
+                        </div>
+                        <div class="user-actions">
+                            <button class="action-icon" title="Отправить сообщение">
+                                <i class="fas fa-comment"></i>
+                            </button>
+                            <button class="action-icon" title="Позвонить">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user-card">
+                    <div class="user-avatar">МО</div>
+                    <div class="user-info">
+                        <h3>Морозова Ольга Павловна</h3>
+                        <div class="user-detail">
+                            <i class="fas fa-envelope"></i>
+                            <span>morozova@example.com</span>
+                        </div>
+                        <div class="user-detail">
+                            <i class="fas fa-briefcase"></i>
+                            <span>Куратор студенческих проектов</span>
+                        </div>
+                        <div class="user-detail">
+                            <i class="fas fa-id-card"></i>
+                            <span>ID: 006</span>
+                        </div>
+                        <div class="user-actions">
+                            <button class="action-icon" title="Отправить сообщение">
+                                <i class="fas fa-comment"></i>
+                            </button>
+                            <button class="action-icon" title="Позвонить">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">
+                    <i class="fas fa-users-slash"></i>
+                </div>
+                <h3>Пользователи не найдены</h3>
+                <p>Попробуйте изменить поисковый запрос или зарегистрируйте нового пользователя.</p>
+                <a href="register.html" class="action-btn">Зарегистрировать нового пользователя</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2023 Badzoom. Платформа для видеозвонков студентов</p>
+            <p>Сделано студентами для студентов. Просто и удобно.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const userCards = document.querySelectorAll('.user-card');
+            const usersList = document.getElementById('usersList');
+            const emptyState = document.getElementById('emptyState');
+
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                let visibleCount = 0;
+
+                userCards.forEach(card => {
+                    const name = card.querySelector('h3').textContent.toLowerCase();
+                    const email = card.querySelector('.user-detail:nth-child(2) span').textContent.toLowerCase();
+                    const position = card.querySelector('.user-detail:nth-child(3) span').textContent.toLowerCase();
+
+                    if (name.includes(searchTerm) || email.includes(searchTerm) || position.includes(searchTerm)) {
+                        card.style.display = 'flex';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                if (visibleCount === 0 && searchTerm) {
+                    usersList.style.display = 'none';
+                    emptyState.style.display = 'block';
+                } else {
+                    usersList.style.display = 'grid';
+                    emptyState.style.display = 'none';
+                }
+            });
+
+            const actionIcons = document.querySelectorAll('.action-icon');
+            actionIcons.forEach(icon => {
+                icon.addEventListener('click', function() {
+                    const userName = this.closest('.user-card').querySelector('h3').textContent;
+                    const action = this.getAttribute('title');
+
+                    if (action === 'Отправить сообщение') {
+                        alert(`Отправка сообщения пользователю: ${userName}`);
+                    } else if (action === 'Позвонить') {
+                        alert(`Звонок пользователю: ${userName}`);
+                    }
+                });
+            });
+        });
+
+        window.addEventListener('scroll', function() {
+            const parallaxBg = document.querySelector('.parallax-bg');
+            if (parallaxBg) {
+                const scrolled = window.pageYOffset;
+                parallaxBg.style.transform = `translateY(${scrolled * 0.3}px)`;
+            }
+
+            const header = document.querySelector('.transparent-header');
+            if (header) {
+                if (window.pageYOffset > 50) {
+                    header.style.background = 'rgba(0, 0, 0, 0.85)';
+                    header.style.backdropFilter = 'blur(10px)';
+                } else {
+                    header.style.background = 'transparent';
+                    header.style.backdropFilter = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
