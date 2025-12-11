@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="users-container">
+    <div class="container">
+        <div class="users-header">
+            <h2>👥 Зарегистрированные пользователи</h2>
+            <p class="users-count">Всего пользователей: {{ users|length }}</p>
+        </div>
+
+        {% if users %}
+        <div class="users-list">
+            {% for user in users %}
+            <div class="user-card">
+                <div class="user-avatar">{{ user.first_name[0] }}{{ user.last_name[0] }}</div>
+                <div class="user-info">
+                    <h3>{{ user.last_name }} {{ user.first_name }} {{ user.middle_name }}</h3>
+                    <p class="user-email">📧 {{ user.email }}</p>
+                    <p class="user-position">💼 {{ user.position }}</p>
+                    <p class="user-id">🆔 ID: {{ user.id }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">😔</div>
+            <h3>Пользователи не найдены</h3>
+            <p>Пока нет зарегистрированных пользователей.</p>
+            <a href="/auth" class="action-btn primary">📝 Зарегистрировать первого пользователя</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .users-container {
+        min-height: 100vh;
+        padding: 100px 0;
+        background-color: #0a0a0a;
+        color: #f0f0f0;
+        position: relative;
+    }
+
+    .users-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(to right, transparent, #4dabf7, transparent);
+    }
+
+    .users-header {
+        text-align: center;
+        margin-bottom: 50px;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 0 20px;
+    }
+
+    .users-header h2 {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        color: white;
+        position: relative;
+        display: inline-block;
+    }
+
+    .users-header h2::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 3px;
+        background: linear-gradient(to right, transparent, #4dabf7, transparent);
+    }
+
+    .users-count {
+        font-size: 1.2rem;
+        color: #b0b0b0;
+        max-width: 600px;
+        margin: 20px auto 0;
+    }
+
+    .users-list {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 25px;
+    }
+
+    .user-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .user-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(77, 171, 247, 0.3);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+    }
+
+    .user-avatar {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #4dabf7, #3b5bdb);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: white;
+        flex-shrink: 0;
+        box-shadow: 0 10px 20px rgba(77, 171, 247, 0.2);
+    }
+
+    .user-info {
+        flex: 1;
+    }
+
+    .user-info h3 {
+        font-size: 1.5rem;
+        margin-bottom: 12px;
+        color: white;
+        line-height: 1.3;
+    }
+
+    .user-email,
+    .user-position,
+    .user-id {
+        margin-bottom: 8px;
+        color: #b0b0b0;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .empty-state {
+        max-width: 600px;
+        margin: 50px auto;
+        text-align: center;
+        padding: 60px 40px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+        font-size: 2rem;
+        margin-bottom: 15px;
+        color: white;
+    }
+
+    .empty-state p {
+        color: #b0b0b0;
+        margin-bottom: 30px;
+        font-size: 1.1rem;
+    }
+
+    .action-btn {
+        display: inline-block;
+        padding: 16px 32px;
+        background: transparent;
+        border: 2px solid white;
+        border-radius: 10px;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .action-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: white;
+        transition: left 0.3s ease;
+        z-index: -1;
+    }
+
+    .action-btn:hover {
+        color: black;
+    }
+
+    .action-btn:hover::before {
+        left: 0;
+    }
+
+    @media (max-width: 768px) {
+        .users-container {
+            padding: 80px 0;
+        }
+
+        .users-header h2 {
+            font-size: 2.5rem;
+        }
+
+        .users-list {
+            grid-template-columns: 1fr;
+            padding: 0 15px;
+        }
+
+        .user-card {
+            padding: 25px;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .users-header h2 {
+            font-size: 2rem;
+        }
+
+        .users-count {
+            font-size: 1rem;
+        }
+
+        .user-card {
+            flex-direction: column;
+            text-align: center;
+            align-items: center;
+        }
+
+        .user-info h3 {
+            font-size: 1.3rem;
+        }
+
+        .empty-state {
+            padding: 40px 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}
